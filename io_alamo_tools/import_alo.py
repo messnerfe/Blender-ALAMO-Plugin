@@ -268,7 +268,7 @@ class ALO_Importer(bpy.types.Operator):
                 faces += subMesh.faces
                 animationMapping += subMesh.animationMapping
 
-                # ensure UV coordinates are in bounds (0-1)
+                # ensure that UV coordinates are in bounds (0-1)
                 subMeshUVsInBounds = []
                 for subMeshUV in subMesh.UVs:
                     x = subMeshUV[0]
@@ -284,7 +284,6 @@ class ALO_Importer(bpy.types.Operator):
                             y -= 1
                     subMeshUVsInBounds += [[x,y]]
                 UVs += subMeshUVsInBounds
-
 
             mesh.from_pydata(vertices, [], faces)
 
@@ -305,6 +304,7 @@ class ALO_Importer(bpy.types.Operator):
                         currentSubMeshMaxFaceIndex += currentMesh.subMeshList[subMeshCounter].nFaces
                     face.material_index = subMeshCounter
             
+            # create UVs
             createUVLayer("MainUV", UVs)
             assign_vertex_groups(animationMapping, currentMesh)
 
