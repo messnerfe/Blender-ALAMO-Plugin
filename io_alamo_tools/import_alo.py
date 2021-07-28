@@ -268,21 +268,25 @@ class ALO_Importer(bpy.types.Operator):
                 faces += subMesh.faces
                 animationMapping += subMesh.animationMapping
 
-                # ensure that UV coordinates are in bounds (0-1)
+                # ensure that UV coordinates are in bounds ( >=0 and <=1)
+                # if one out of bounds coordinate is found, shift the whole set accordingly
                 subMeshUVsInBounds = []
                 for subMeshUV in subMesh.UVs:
                     x = subMeshUV[0]
                     y = subMeshUV[1]
-                    while x < 0 or x > 1 or y < 0 or y > 1:
-                        if x < 0:
-                            x += 1
-                        if x > 1:
-                            x -= 1
-                        if y < 0:
-                            y += 1
-                        if y > 1:
-                            y -= 1
-                    subMeshUVsInBounds += [[x,y]]
+                    xOffset = 0
+                    yOffset = 0
+                    if x < 0:
+                        xOffset = 1 + math.floor(abs(x))
+                    if x > 1:
+                        xOffset = - math.floor(abs(x))
+                    if y < 0:
+                        yOffset = 1 + math.floor(abs(y))
+                    if y > 1:
+                        yOffset = - math.floor(abs(y))
+                    for subMeshUV in subMesh.UVs:
+                        subMeshUVsInBounds += [[subMeshUV[0] + xOffset, subMeshUV[1] + yOffset]]
+                    break
                 UVs += subMeshUVsInBounds
 
             mesh.from_pydata(vertices, [], faces)
