@@ -272,21 +272,12 @@ class ALO_Importer(bpy.types.Operator):
                 # if one out of bounds coordinate is found, shift the whole set accordingly
                 subMeshUVsInBounds = []
                 for subMeshUV in subMesh.UVs:
-                    x = subMeshUV[0]
-                    y = subMeshUV[1]
-                    xOffset = 0
-                    yOffset = 0
-                    if x < 0:
-                        xOffset = 1 + math.floor(abs(x))
-                    if x > 1:
-                        xOffset = - math.floor(abs(x))
-                    if y < 0:
-                        yOffset = 1 + math.floor(abs(y))
-                    if y > 1:
-                        yOffset = - math.floor(abs(y))
-                    for subMeshUV in subMesh.UVs:
-                        subMeshUVsInBounds += [[subMeshUV[0] + xOffset, subMeshUV[1] + yOffset]]
-                    break
+                    xOffset = math.floor(subMeshUV[0]) if subMeshUV[0] != 1 else 0
+                    yOffset = math.floor(subMeshUV[1]) if subMeshUV[1] != 1 else 0
+                    if xOffset != 0 or yOffset != 0:
+                        for subMeshUV in subMesh.UVs:
+                            subMeshUVsInBounds += [[subMeshUV[0] - xOffset, subMeshUV[1] - yOffset]]
+                        break
                 UVs += subMeshUVsInBounds
 
             mesh.from_pydata(vertices, [], faces)
